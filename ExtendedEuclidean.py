@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#autor: Marco Antônio de Lima Costa
+#algoritimo: Euclides estendido para achar o inverso multiplicativo
+
 #assume-se que o maximo divisor comum de entrada e modulo é 1, ou seja são primos entre si
 
 def inversoMultiplicativo(entrada, modulo) :
