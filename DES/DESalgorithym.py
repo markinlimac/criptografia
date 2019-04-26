@@ -2,43 +2,17 @@
 from random import choice
 import os
 
-#Initial permut matrix for the datas
-PI = [58, 50, 42, 34, 26, 18, 10, 2,
-      60, 52, 44, 36, 28, 20, 12, 4,
-      62, 54, 46, 38, 30, 22, 14, 6,
-      64, 56, 48, 40, 32, 24, 16, 8,
-      57, 49, 41, 33, 25, 17, 9, 1,
-      59, 51, 43, 35, 27, 19, 11, 3,
-      61, 53, 45, 37, 29, 21, 13, 5,
-      63, 55, 47, 39, 31, 23, 15, 7]
+#Vetor da permutação inicial definida
+PI = [58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7]
 
-#Initial permut made on the key
-CP_1 = [57, 49, 41, 33, 25, 17, 9,
-        1, 58, 50, 42, 34, 26, 18,
-        10, 2, 59, 51, 43, 35, 27,
-        19, 11, 3, 60, 52, 44, 36,
-        63, 55, 47, 39, 31, 23, 15,
-        7, 62, 54, 46, 38, 30, 22,
-        14, 6, 61, 53, 45, 37, 29,
-        21, 13, 5, 28, 20, 12, 4]
+#Vetor da permutação inical feita na chave (permuted choice one)
+CP_1 = [57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18, 10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36, 63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13, 5, 28, 20, 12, 4]
 
-#Permut applied on shifted key to get Ki+1
-CP_2 = [14, 17, 11, 24, 1, 5, 3, 28,
-        15, 6, 21, 10, 23, 19, 12, 4,
-        26, 8, 16, 7, 27, 20, 13, 2,
-        41, 52, 31, 37, 47, 55, 30, 40,
-        51, 45, 33, 48, 44, 49, 39, 56,
-        34, 53, 46, 42, 50, 36, 29, 32]
+#Vetor da permutação aplicada depois de fazer shift para obter a proxima subchave (permuted choice one)
+CP_2 = [14, 17, 11, 24, 1, 5, 3, 28, 15, 6, 21, 10, 23, 19, 12, 4, 26, 8, 16, 7, 27, 20, 13, 2, 41, 52, 31, 37, 47, 55, 30, 40, 51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32]
 
-#Expand matrix to get a 48bits matrix of datas to apply the xor with Ki
-E = [32, 1, 2, 3, 4, 5,
-     4, 5, 6, 7, 8, 9,
-     8, 9, 10, 11, 12, 13,
-     12, 13, 14, 15, 16, 17,
-     16, 17, 18, 19, 20, 21,
-     20, 21, 22, 23, 24, 25,
-     24, 25, 26, 27, 28, 29,
-     28, 29, 30, 31, 32, 1]
+#Vetor da matriz expandida
+E = [32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 14, 15, 16, 17, 16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25, 24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1]
 
 #SBOX
 S_BOX = [
@@ -92,38 +66,28 @@ S_BOX = [
 ]
 ]
 
-#Permut made after each SBox substitution for each round
-P = [16, 7, 20, 21, 29, 12, 28, 17,
-     1, 15, 23, 26, 5, 18, 31, 10,
-     2, 8, 24, 14, 32, 27, 3, 9,
-     19, 13, 30, 6, 22, 11, 4, 25]
+#Permutação feita depois de cada SBox
+P = [16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25]
 
-#Final permut for datas after the 16 rounds
-PI_1 = [40, 8, 48, 16, 56, 24, 64, 32,
-        39, 7, 47, 15, 55, 23, 63, 31,
-        38, 6, 46, 14, 54, 22, 62, 30,
-        37, 5, 45, 13, 53, 21, 61, 29,
-        36, 4, 44, 12, 52, 20, 60, 28,
-        35, 3, 43, 11, 51, 19, 59, 27,
-        34, 2, 42, 10, 50, 18, 58, 26,
-        33, 1, 41, 9, 49, 17, 57, 25]
+#Permutação final depois de ter feito todos os rounds (inverso da permutação inicial)
+PI_1 = [40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25]
 
-#Matrix that determine the shift for each round of keys
+#Vetor que define quantos shifts vao ser feitos em cada round
 SHIFT = [1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1]
 
-def makePassword(tamanho, escolha):
-    if escolha == 1:
+def makePassword(tamanho, escolha): #Gera uma chave aleatória de 8bytes
+    if escolha == 1: #Se for para criptografar a chave tem que ser criada
         caracters = '0123456789ABCDEFGHIJKLMNOPQRSTUWVXZabcdefghijlmnopqrstuwvxz$./'
         senha = ''
-        for char in range(tamanho):
-                senha += choice(caracters)
+        for char in range(tamanho): #No range de 8bytes
+                senha += choice(caracters) #Escolhe um caracter aleatoriamente e adiciona ao final da senha
         
         print('chave = {}'.format(senha))
         key = open('key.txt', 'w')
-        key.write(senha)
+        key.write(senha) #Escreve a senha no arquivo "key.txt"
         key.close
     
-    elif escolha == 2:
+    elif escolha == 2: #Caso seja para descriptografar a chave ja existe e esta armazenada no arquivo "key.txt" 
         arquivo = open('key.txt', 'r+')
         for line in arquivo:
             senha = line
@@ -138,7 +102,7 @@ def getLastLine(datafile): #Pega o valor da ultima linha do arquivo
     datafile.close()
     return last_line
 
-def correctText(last_line, datafile, entrada):
+def correctText(last_line, datafile, entrada): #Caso a entrada nao seja multiplo de 8 (8bytes), o programa adiciona espaços no final
     datafile = open(datafile, 'r+')
     
     for line in datafile:
@@ -173,26 +137,26 @@ def correctText(last_line, datafile, entrada):
 
     datafile.close()
 
-def string_to_bit_array(text):#Convert a string into a list of bits
-    array = list()
+def string_to_bit_vetcor(text):#Converte uma string em uma lista de bits
+    vetor = list()
     for char in text:
-        binval = binvalue(char, 8)#Get the char value on one byte
-        array.extend([int(x) for x in list(binval)]) #Add the bits to the final list
-    return array
+        valor_binario = binval(char, 8)#Retorna o valor em bytes(8 bits) de cada char
+        vetor.extend([int(x) for x in list(valor_binario)]) #Adiciona cada bit ao final da lista
+    return vetor
 
-def bit_array_to_string(array): #Recreate the string from the bit array
-    res = ''.join([chr(int(y,2)) for y in [''.join([str(x) for x in _bytes]) for _bytes in  nsplit(array,8)]])   
-    return res
+def bit_vector_to_string(vetor):#Retorna uma string a partir da lista de bits
+    string = ''.join([chr(int(y,2)) for y in [''.join([str(x) for x in bytes]) for bytes in  nsplit(vetor,8)]])   
+    return string
 
-def binvalue(val, bitsize): #Return the binary value as a string of the given size 
+def binval(val, bitsize):#Retorna o numero binário de uma string do tamanho determinado 
     binval = bin(val)[2:] if isinstance(val, int) else bin(ord(val))[2:]
     if len(binval) > bitsize:
         raise "binary value larger than the expected size"
     while len(binval) < bitsize:
-        binval = "0"+binval #Add as many 0 as needed to get the wanted size
+        binval = "0"+binval #Adiciona a quantidade de 0 necessarias para obter o tamanho desejado
     return binval
 
-def nsplit(s, n):#Split a list into sublists of size "n"
+def nsplit(s, n):#Quebra uma lista em varias sublistas de tamanho "n"
     return [s[k:k+n] for k in range(0, len(s), n)]
 
 ENCRYPT=1
@@ -204,93 +168,74 @@ class des():
         self.text = None
         self.keys = list()
         
-    def run(self, key, text, action=ENCRYPT, padding=False):
-        if len(key) < 8:
-            raise "Key Should be 8 bytes long"
-        elif len(key) > 8:
-            key = key[:8] #If key size is above 8bytes, cut to be 8bytes long
-        
+    def run(self, key, text, action=ENCRYPT):
         self.password = key
         self.text = text
         
-        if padding and action==ENCRYPT:
-            self.addPadding()
-        elif len(self.text) % 8 != 0:#If not padding specified data size must be multiple of 8 bytes
-            raise "Data size should be multiple of 8"
-        
-        self.generatekeys() #Generate all the keys
-        text_blocks = nsplit(self.text, 8) #Split the text in blocks of 8 bytes so 64 bits
+        self.generatekeys() #Gera todas as chaves
+        text_blocks = nsplit(self.text, 8) #Qeubra o texto em blocos de 8 bytes so 64 bits
         result = list()
-        for block in text_blocks:#Loop over all the blocks of data
-            block = string_to_bit_array(block)#Convert the block in bit array
-            block = self.permut(block,PI)#Apply the initial permutation
-            g, d = nsplit(block, 32) #g(LEFT), d(RIGHT)
+        for block in text_blocks:#Cada bloco de texto passa por 16 rounds
+            block = string_to_bit_vetcor(block)#Converte o bloco em um vetor de bits
+            block = self.permut(block,PI)#Aplica a permutação inicial
+            g, d = nsplit(block, 32) #Quebra o bloco em 2 blocos g(LEFT), d(RIGHT)
             tmp = None
-            for i in range(16): #Do the 16 rounds
-                d_e = self.expand(d, E) #Expand d to match Ki size (48bits)
+            for i in range(16): #Executa os 16 rounds
+                d_e = self.expand(d, E) #Expande o d(RIGHT) para ficar do tamanho da subchave(48bits)
                 if action == ENCRYPT:
-                    tmp = self.xor(self.keys[i], d_e)#If encrypt use Ki
+                    tmp = self.xor(self.keys[i], d_e)#Se for encriptação usa a primeira subchave
                 else:
-                    tmp = self.xor(self.keys[15-i], d_e)#If decrypt start by the last key
-                tmp = self.substitute(tmp) #Method that will apply the SBOXes
-                tmp = self.permut(tmp, P)
-                tmp = self.xor(g, tmp)
+                    tmp = self.xor(self.keys[15-i], d_e)#Se for deecriptação começa pela ultima subchave
+                tmp = self.substitute(tmp)#Aplicação das SBOXes
+                tmp = self.permut(tmp, P)#Faz a permutação 
+                tmp = self.xor(g, tmp)#Faz o xor entre g(LEFT) e tmp
                 g = d
                 d = tmp
-            result += self.permut(d+g, PI_1) #Do the last permut and append the result to result
-        final_res = bit_array_to_string(result)
-        if padding and action==DECRYPT:
-            return self.removePadding(final_res) #Remove the padding if decrypt and padding is true
-        else:
-            return final_res #Return the final string of data ciphered/deciphered
+            result += self.permut(d+g, PI_1) #Faz a ultima permutação e acrescenta o resultado na lista
+        final_res = bit_vector_to_string(result)
+        
+        return final_res #Retorna a string final do dado cifrado ou decifrado
     
-    def substitute(self, d_e):#Substitute bytes using SBOX
-        subblocks = nsplit(d_e, 6)#Split bit array into sublist of 6 bits
+    def substitute(self, d_e):#Substitui os bytes usando a SBOX
+        subblocks = nsplit(d_e, 6)#Divide o vetor de bit em sublistas de 6 bits
         result = list()
-        for i in range(len(subblocks)): #For all the sublists
+        for i in range(len(subblocks)): #No range de todas sublistas
             block = subblocks[i]
-            row = int(str(block[0])+str(block[5]),2)#Get the row with the first and last bit
-            column = int(''.join([str(x) for x in block[1:][:-1]]),2) #Column is the 2,3,4,5th bits
-            val = S_BOX[i][row][column] #Take the value in the SBOX appropriated for the round (i)
-            bin = binvalue(val, 4)#Convert the value to binary
-            result += [int(x) for x in bin]#And append it to the resulting list
+            row = int(str(block[0])+str(block[5]),2)#Obtem a linha com o primeiro e ultimo bit
+            column = int(''.join([str(x) for x in block[1:][:-1]]),2) #Coluna é os bits 2,3,4,5
+            val = S_BOX[i][row][column] #Pega o valor de cada SBOX no round
+            bin = binval(val, 4)#Converte o valor para binario
+            result += [int(x) for x in bin]#Acrescenta o valor na lista de resultado
         return result
         
-    def permut(self, block, table):#Permut the given block using the given table (so generic method)
+    def permut(self, block, table):#Permuta o bloco usando a tabela dada
         return [block[x-1] for x in table]
     
-    def expand(self, block, table):#Do the exact same thing than permut but for more clarity has been renamed
+    def expand(self, block, table):#Permuta o bloco usando a tabela dada
         return [block[x-1] for x in table]
     
-    def xor(self, t1, t2):#Apply a xor and return the resulting list
+    def xor(self, t1, t2):#Aplica o xor e retorna a lista de resultado
         return [x^y for x,y in zip(t1,t2)]
     
-    def generatekeys(self):#Algorithm that generates all the keys
+    def generatekeys(self):#Geração de chaves
         self.keys = []
-        key = string_to_bit_array(self.password)
-        key = self.permut(key, CP_1) #Apply the initial permut on the key
-        g, d = nsplit(key, 28) #Split it in to (g->LEFT),(d->RIGHT)
-        for i in range(16):#Apply the 16 rounds
-            g, d = self.shift(g, d, SHIFT[i]) #Apply the shift associated with the round (not always 1)
+        key = string_to_bit_vetcor(self.password)
+        key = self.permut(key, CP_1) #Aplica a permutação inicial na chave
+        g, d = nsplit(key, 28) #Quebra a chave em 2 blocos (g->LEFT),(d->RIGHT)
+        for i in range(16):#Aplica os 16 rounds
+            g, d = self.shift(g, d, SHIFT[i]) #Aplica os shifts de acordo com o round em questão
             tmp = g + d #Merge them
-            self.keys.append(self.permut(tmp, CP_2)) #Apply the permut to get the Ki
+            self.keys.append(self.permut(tmp, CP_2)) #Aplica a permutação para obter a subchave
 
-    def shift(self, g, d, n): #Shift a list of the given value
+    def shift(self, g, d, n): #Aplica os shifts nos valores da lista
         return g[n:] + g[:n], d[n:] + d[:n]
     
-    def addPadding(self):#Add padding to the datas using PKCS5 spec.
-        pad_len = 8 - (len(self.text) % 8)
-        self.text += pad_len * chr(pad_len)
     
-    def removePadding(self, data):#Remove the padding of the plain text (it assume there is padding)
-        pad_len = ord(data[-1])
-        return data[:-pad_len]
+    def encrypt(self, key, text):
+        return self.run(key, text, ENCRYPT)
     
-    def encrypt(self, key, text, padding=False):
-        return self.run(key, text, ENCRYPT, padding)
-    
-    def decrypt(self, key, text, padding=False):
-        return self.run(key, text, DECRYPT, padding)
+    def decrypt(self, key, text):
+        return self.run(key, text, DECRYPT)
     
 if __name__ == '__main__':
     d = des()
@@ -298,42 +243,42 @@ if __name__ == '__main__':
     escolha = int(input('deseja criptograr[1] ou descriptografar[2]: '))
     
     if escolha == 1:
-        key = makePassword(8, escolha)
-        path = os.path.abspath(os.path.dirname(__file__))
-        dir = os.listdir(path)
+        key = makePassword(8, escolha) #Gera uma chave aleatória de 8bytes
+        path = os.path.abspath(os.path.dirname(__file__)) #Acha o caminho do diretorio em que o programa esta
+        dir = os.listdir(path) #Acha o diretorio em que o programa esta
         for file in dir:
-            if file == "cypher_text.txt":
+            if file == "cypher_text.txt": #Caso ja exista o arquivo "cypher_text.txt" o programa exclui para não dar nenhum problema 
                 os.remove(file)
-            if file == "entrada_atualizada.txt":
+            if file == "entrada_atualizada.txt": #Caso ja exista o arquivo "entrada_atualizada.txt" o programa exclui para não dar nenhum problema
                 os.remove(file)
 
         entrada = []
         datafile = "entrada1.txt"
         arq = open(datafile, "r+")
-        correctText(getLastLine(datafile), datafile, entrada)
+        correctText(getLastLine(datafile), datafile, entrada) #Caso a entrada nao seja multiplo de 8 (8bytes), o programa adiciona espaços no final
         datafile = "entrada_atualizada.txt"
         arq = open(datafile, "r+")
         text = arq.read()
         print('TEXTO: {}'.format(text))
         r = d.encrypt(key,text)
         arq = open("cypher_text.txt", "w")
-        arq.write(r)
+        arq.write(r) #Escreve o texto cifrado no arquivo "cypher_text.txt" 
         arq.close
         print("TEXTO CIFRADO: {}".format(r))
     
     elif escolha == 2:
         key = makePassword(8, escolha)
         existe = os.path.exists('cypher_text.txt')
-        if existe == True:            
+        if existe == True: #Caso ja exista o arquivo "cypher_text.txt" o programa ira ler para descriptografar            
             arq = open("cypher_text.txt", "r+")
             r = arq.read()
             print("TEXTO CIFRADO: {}".format(r))
             r2 = d.decrypt(key,r)
             arq = open("plain_text.txt", "w")
-            arq.write(r2)
+            arq.write(r2) #Escreve o texto descifrado no arquivo "plain_text.txt" 
             arq.close
             print("TEXTO DESCRIPTOGRAFADO: {}".format(r2))
-        elif existe == False:
+        elif existe == False: #Caso nãp exista o arquivo "cypher_text.txt" o programa ira identificar que não há dados para serem descriptografados
             print('Não existe nenhum dado criptografado')
     
     else:
