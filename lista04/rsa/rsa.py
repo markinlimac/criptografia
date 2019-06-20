@@ -55,12 +55,12 @@ def checkIsPrime(num): #executa o algoritimo de millerrabin com 100 rounds, para
     while s % 2 == 0:
         r += 1
         s //= 2
-    for _ in xrange(100):
+    for _ in range(100):
         a = random.randrange(2, num - 1)
         x = pow(a, s, num)
         if x == 1 or x == num - 1:
             continue
-        for _ in xrange(r - 1):
+        for _ in range(r - 1):
             x = pow(x, 2, num)
             if x == num - 1:
                 break
@@ -104,68 +104,51 @@ def getData(caminho):
     return text
 
 def charToAscii(plainText):
-    ascii = ""
+    ascii = [0]*len(plainText)
+    
     for i in range(len(plainText)):
-        ascii = ascii + str(ord(plainText[i]))    
-    return ascii #retorna o bloco em forma de string de numeros inteiros representando cada char
+        ascii[i] = ord(plainText[i])    
+    return ascii
 
 def makeMod(n, num, block):
-    string = ""
-    for i in block:
-        string = string + i
-    
-    c = (int(string)**num)%n
+        
+    c = (block**num)%n
     return c
 
 def saveArquive(cypherText, resposta):
     if resposta == 1:
-        print("TEXTO CIFRADO: {}".format(cypherText))
+        text = ""
+        for char in cypherText:
+            text = text + chr(char)
+        print("TEXTO CIFRADO: {}".format(text))
         arq = open("cypher_text.txt", "w") 
-        arq.write(cypherText) #escreve o texto cifrado no arquivo cypher_text.txt 
+        arq.write(text) #escreve o texto cifrado no arquivo cypher_text.txt 
         arq.close
     elif resposta == 2:
-        print("TEXTO DESCRIPTOGRAFADO: {}".format(cypherText))
+        text = ""
+        for char in cypherText:
+            text = text + chr(char)
+        print("TEXTO DESCRIPTOGRAFADO: {}".format(text))
         arq = open("plain_text.txt", "w") 
-        arq.write(cypherText) #escreve o texto cifrado no arquivo cypher_text.txt 
+        arq.write(text) #escreve o texto cifrado no arquivo cypher_text.txt 
         arq.close
-    
-def makeBlock(ascii, digit, n, num, resposta):
-    cypherText = ""
-    for j in range(int(math.ceil(float(len(ascii))/digit))): #divide o tamanho do plaintext por digit
-        start = j*digit # o inicio do bloco de 16 bytes
-        end = j*digit+digit # o fim do bloco de 16 bytes
-        if  end > len(ascii): #se o fim do bloco for maior que o proprio tamanho da string
-            end = len(ascii) #o fim do bloco vai ser o final da string
-        
-        if end - start > digit:
-            end = start + digit
-        ar = ['0']*digit
-        
-        i = start
-        j = 0
-        while len(ar) < end - start: #enquanto o tamanho da string ar for menor que o tamanho do bloco
-            ar.append('0') #o programa acrescenta 0
-        while i < end:
-            ar[j] = (ascii[i]) #o programa substitui o 0 pelo inteiro que representa o char
-            j += 1
-            i += 1
-        
-        c = makeMod(n, num, ar)
-        cypherText = cypherText + str(c)
-    
-    saveArquive(cypherText, resposta)
 
 def encrypt(n, e, caminho, resposta):
     plainText = getData(caminho)
+    cypherText = [0]*len(plainText)
     ascii = charToAscii(plainText)
-    print("TEXTO EM FORMATO ASCII: {}".format(ascii))
-    digit = len(str(n))
-    makeBlock(ascii, digit-1, n, e, resposta)
 
-def decrypt(n, d, caminho, resposta):
-    cypherText = getData(caminho)
-    digit = len(str(n))
-    makeBlock(cypherText, digit-1, n, d, resposta)
+    i = 0
+    for char in ascii:
+        c = makeMod(n, e, char)
+        cypherText[i] = c
+        i = i + 1
+    saveArquive(cypherText, resposta)
+
+# def decrypt(n, d, caminho, resposta):
+#     cypherText = getData(caminho)
+#     digit = len(str(n))
+#     makeBlock(cypherText, digit-1, n, d, resposta)
 
 def menu(n, e, p, q, d):
     print("\n========MENU========")
@@ -177,29 +160,30 @@ def menu(n, e, p, q, d):
         resposta = int(input("\nO que deseja fazer: "))
     
     if resposta == 0:
+        print("\nOBRIGADO POR UTILIZAR ESSE PROGRAMA!\n")
         return 0
         
     if resposta == 1:
-        caminho = raw_input("Digite o caminho do arquivo que deseja criptografar: ")
+        caminho = input("Digite o caminho do arquivo que deseja criptografar: ")
         while caminho == 'show':
             path = os.path.abspath(os.path.dirname(__file__))
             dir = os.listdir(path)
             for file in dir:
                 print("{}/{}".format(path,file))
-            caminho = raw_input("\nDigite o caminho do arquivo que deseja criptografar: ")
+            caminho = input("\nDigite o caminho do arquivo que deseja criptografar: ")
         else:
             encrypt(n, e, caminho, resposta)
             
     elif resposta == 2:
-        caminho = raw_input("Digite o caminho do arquivo que deseja descriptografar: ")
+        caminho = input("Digite o caminho do arquivo que deseja descriptografar: ")
         while caminho == 'show':
             path = os.path.abspath(os.path.dirname(__file__))
             dir = os.listdir(path)
             for file in dir:
                 print("{}/{}".format(path,file))
-            caminho = raw_input("\nDigite o caminho do arquivo que deseja descriptografar: ")
+            caminho = input("\nDigite o caminho do arquivo que deseja descriptografar: ")
         else:
-            decrypt(n, d, caminho, resposta)
+            encrypt(n, d, caminho, resposta)
     
 def main():
     print("----------------------------RSA----------------------------")
