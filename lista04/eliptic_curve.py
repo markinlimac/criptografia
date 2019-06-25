@@ -1,5 +1,4 @@
-#achar o ponto no infinito 
-#somar varias vezes todos os pontos ate chegar no ponto no infinito e fazer um contador para que conte quantas vezes foi somado (ordem do ponto)
+pontoInfinito = (0,0)
 import random
 
 def checkIsPrime(num): #executa o algoritimo de millerrabin com 100 rounds, para saber se o numero eh primo ou nao
@@ -27,24 +26,45 @@ def checkIsPrime(num): #executa o algoritimo de millerrabin com 100 rounds, para
             return False
     return True
 
-def getInfinitPoint(x, y, xanterior, yanterior, p, a):
-    y = y-(p/2) 
-    yanterior = yanterior-(p/2)
-    x3 = xanterior + x
-    y3 = yanterior + y
-    return x3, int(y3)
+def extend_euclids_function(a, b):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while b != 0:
+        q, a, b = a // b, b, a % b
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
 
-# def getInfinitPoint(x, y, xanterior, yanterior, p, a):
-#     if xanterior != x:
-#         lambd = ((y - yanterior)/(x - xanterior))%p
-#         x3 = (lambd**2 - xanterior - x)%p
-#         y3 = (lambd*(xanterior - x3) - yanterior)%p
-#     elif xanterior == x and yanterior != 0:
-#         lambd = (3*(xanterior**2) + a)/(2*yanterior)
-#         x3 = (lambd**2 - 2*xanterior)%p
-#         y3 = (lambd*(xanterior - x3) - yanterior)%p        
-# 
-#     return x3, y3
+    return x0
+
+def makeSum(pontoP, x, y, p, a):
+    pontoQ = (x, y)
+    Xp, Yp = pontoP
+    
+    if pontoP == pontoInfinito:
+        resultado = pontoQ
+    elif pontoQ == pontoInfinito:
+        resultado = pontoP
+    elif Xp == x and (Yp == (-y) % p):
+        resultado = pontoInfinito
+    else:
+        if pontoP != pontoQ:
+            lambd = ((y - Yp)*extend_euclids_function((x - Xp), p))%p
+            x3 = int((lambd**2 - Xp - x)%p)
+            y3 = int((lambd*(Xp - x3) - Yp)%p)
+        elif pontoP == pontoQ:
+            lambd = ((3*(Xp**2) + a)*extend_euclids_function((2*Yp), p))%p
+            x3 = int((lambd**2 - Xp - x)%p)
+            y3 = int((lambd*(Xp - x3) - Yp)%p)         
+        resultado = (x3, y3)
+    
+    return resultado
+
+def getOrder(x, y, p, a):
+    ordem = 1
+    ponto = (x,y)
+    while ponto != pontoInfinito:
+        ponto = makeSum(ponto, x, y, p, a)
+        ordem += 1
+    return ordem
     
 def checkRoot(a, b): #checa se realmente a curva é uma curva nao-singular, se nao possui raizes multiplas 
     if (4*(a**3) + 27*(b**2)) != 0:
@@ -56,20 +76,24 @@ def checkRoot(a, b): #checa se realmente a curva é uma curva nao-singular, se n
         
 def calcRoot(a, b, p):
     contador = 0
+    listOrdem = []
+    listPonto = []
     
     for x in range(p):
         for y in range(p):
             if (y**2)%p == (x**3 + a*x + b)%p:
                 contador += 1
-                if contador == 1:
-                    xanterior = x
-                    yanterior = y
-                if contador == 2:
-                    x3,y3 = getInfinitPoint(x, y, xanterior, yanterior, p, a) #calcular o ponto no infinito a partir de pontos simetricos 
-                print(x,y)
-        
-    print("Ponto no infinito: {} {}".format(x3, y3))
-    print("\nNumero total de pontos:",contador+1) #todos os pontos mais o ponto no infinito
+                ponto = (x,y)
+                ordem = getOrder(x, y, p, a)
+                listOrdem.append(ordem)
+                listPonto.append(ponto)
+                print('Ponto ({}, {}) Ordem: {}'.format(x,y,ordem))
+    
+    lista = [value for value in list(zip(listOrdem, listPonto))]            
+    lista.sort()
+    ordem, pontox, pontoy = str(lista[-1]).split(',')
+    print("\nPonto de maior ordem ({},{}) possui ordem igual a {}".format(pontox.split('(')[1], pontoy.split(')')[0], ordem.split('(')[1]))            
+    print("Numero total de pontos:",contador) #todos os pontos mais o ponto no infinito
         
     
 def menu():
