@@ -33,7 +33,11 @@ def questao_a():
     # print("p:", p)
     # print("a:", a)
 
-    generate(Gx, Gy, ordem, p, a)
+    r, s = generate(Gx, Gy, ordem, p, a)
+
+    print("\n\n Par de assinatura da mensagem:"
+            "\n\t R: ", r,
+            "\n\t S: ", s)
 
 
 

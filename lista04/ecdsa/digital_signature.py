@@ -56,6 +56,9 @@ def generate(Gx, Gy, ordem, p, a):
 
     PointG = (Gx, Gy)
 
+    d = 149                                         # Chave Privada
+    PointQ = multiply_ponit(d, PointG, p, a)        # Chave Publica
+
     repeat = True
     while repeat == True:
         repeat = False
@@ -71,20 +74,15 @@ def generate(Gx, Gy, ordem, p, a):
             repeat = True
             continue
 
-        # # Passo 3: Calcule t = K^-1 mod ordem
+        # Passo 3: Calcule t = K^-1 mod ordem
         t  = modular_inverse(k, ordem)
-
 
         # Passo 4: Calcule Hash da mensagem
         message = input("\nDigite a mensagem para a qual deseja criar a assinatura digital:  ")
-        print(message)
+        e = sha1(message)
 
-        sh1_message = sha1(message)
-        print(sh1_message)
+        # Passo 5: Calcula S
+        s = t*(int(e, 16) + d*r)
 
-
-
-        
-
-    
-    
+        # Passo 6: A assinatura é o par R e S
+        return r, s
