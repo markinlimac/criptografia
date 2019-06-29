@@ -1,5 +1,6 @@
 from random import randint
 from math import gcd as bltin_gcd
+from sha1 import sha1
 
 
 def modular_inverse(k, ordem):
@@ -77,6 +78,9 @@ def generate(Gx, Gy, ordem, p, a):
         # Passo 4: Calcule Hash da mensagem
         message = input("\nDigite a mensagem para a qual deseja criar a assinatura digital:  ")
         print(message)
+
+        sh1_message = sha1(message)
+        print(sh1_message)
 
 
 
