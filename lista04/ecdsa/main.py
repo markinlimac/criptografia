@@ -1,54 +1,33 @@
-from digital_signature import generate
-
-import sys
-sys.path.insert(0, '..')
-import elipticAlgorithym
+import os
+from digital_signature import generate, get_global_params, check_message_file_is_not_empty
 
 
 
-def questao_a():
-    # print('Entrou em A')
+def questao_a(pointG, order, p, a):
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-    print("\nAgora, vamos gerar as chaves publicas e privadas: \n")
-    # publicA, publicB, secretA, secretB, ordem, Gx, Gy, p, a = elipticAlgorithym.menu()
+    r, s, message = generate(pointG, order, p, a, 'questao_a')
 
-    secretA = (10, 6)
-    secretB = (12, 11)
-    publicA = (10, 7)
-    publicB = (7, 8)
-    ordem = 12
-    Gx = 12
-    Gy = 11
-    p = 13
-    a = 10
+    print("\n\n\tR: ", r)
+    print("\tS: ", s)
+    print("\tMensagem: ", message)
 
-    # print("\n\nChaves: \n")
-    # print("PrKA:", secretA)
-    # print("PrKB:", secretB)
-    # print("PuKA:", publicA)
-    # print("PuKB:", publicB)
-    # print("N:", ordem)
-    # print("Gx:", Gx)
-    # print("Gy:", Gy)    
-    # print("p:", p)
-    # print("a:", a)
-
-    r, s = generate(Gx, Gy, ordem, p, a)
-
-    print("\n\n Par de assinatura da mensagem:"
-            "\n\t R: ", r,
-            "\n\t S: ", s)
+    input("\nPessione enter para continuar...")
 
 
 
 
 
-def questao_b():
-    print('Entrou em B')
+def questao_b(pointG, order, p, a):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    check_message_file_is_not_empty()
 
-    temp = input("\nPrimeiramente, insira a mensagem para a qual deseja gerar a assinatura digital no arquivo 'message.py'.\n\n"
-                    "\t\tPara continuar pressione enter.\n\n")
+    generate(pointG, order, p, a, 'questao_b')
     
+    
+
+    input("\nPessione enter para continuar...")
+
 
 
 
@@ -60,8 +39,29 @@ def questao_c():
 
 
 def menu():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("\n\nPara utilizar o ECDSA, primeiro devemos definir alguns parametros globais utilizando curvas elipticas.\n")
+    
+    # pointG, order, p, a = get_global_params()
+
+    print("\n\nOs valores foram setados:")
+
+    pointG = (3, 4)
+    order = 12
+    p = 7
+    a = 10
+
+    print("\tOrdem:", order)
+    print("\tGx:", pointG[0])
+    print("\tGy:", pointG[1])    
+    print("\tp:", p)
+    print("\ta:", a)
+
+    value = input("\nPessione enter para continuar...")
+
     while True:
-        print("\n\nPara o ECDSA, há três operações disponíveis: \n")
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\n\nCom os parametros settados, há três operações disponíveis: \n")
         
         print("a - Algoritmo ECDSA.")
         print("b - Algoritmo ECDSA, com arquivo de mensagem e gerando arquivo com assinatura.")
@@ -71,14 +71,14 @@ def menu():
         entrada = input("\n\t\tDigite a opção escolhida:\t")
         
         if entrada == 'a':
-            questao_a()
+            questao_a(pointG, order, p, a)
         elif entrada == 'b':
-            print('Entrou em B')
+            questao_b(pointG, order, p, a)
         elif entrada == 'c':
             print('Entrou em C')
         else:
             print('\n\n\t\tAdeus!\n\n')
-            break;
+            break
 
         print('\n\n\n')
         
