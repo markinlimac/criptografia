@@ -1,22 +1,39 @@
+from digital_signature import generate
+
 import sys
 sys.path.insert(0, '..')
 import elipticAlgorithym
 
 
+
 def questao_a():
-    print('Entrou em A')
+    # print('Entrou em A')
 
     print("\nAgora, vamos gerar as chaves publicas e privadas: \n")
-    publicA, publicB, secretA, secretB, ordem, Gx, Gy = elipticAlgorithym.menu()
+    # publicA, publicB, secretA, secretB, ordem, Gx, Gy, p, a = elipticAlgorithym.menu()
 
-    print("\n\nChaves: \n")
-    print("PrKA:", secretA)
-    print("PrKB:", secretB)
-    print("PuKA:", publicA)
-    print("PuKB:", publicB)
-    print("N:", ordem)
-    print("Gx:", Gx)
-    print("Gy:", Gy)
+    secretA = (10, 6)
+    secretB = (12, 11)
+    publicA = (10, 7)
+    publicB = (7, 8)
+    ordem = 12
+    Gx = 12
+    Gy = 11
+    p = 13
+    a = 10
+
+    # print("\n\nChaves: \n")
+    # print("PrKA:", secretA)
+    # print("PrKB:", secretB)
+    # print("PuKA:", publicA)
+    # print("PuKB:", publicB)
+    # print("N:", ordem)
+    # print("Gx:", Gx)
+    # print("Gy:", Gy)    
+    # print("p:", p)
+    # print("a:", a)
+
+    generate(Gx, Gy, ordem, p, a)
 
 
 
