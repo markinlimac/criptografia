@@ -59,12 +59,12 @@ def makeSum(pontoP, x, y, p, a):
     return resultado
 
 def getOrder(x, y, p, a):
-    ordem = 1
+    order = 1
     ponto = (x,y)
     while ponto != pontoInfinito:
         ponto = makeSum(ponto, x, y, p, a)
-        ordem += 1
-    return ordem
+        order += 1
+    return order
     
 def checkRoot(a, b): #checa se realmente a curva é uma curva nao-singular, se nao possui raizes multiplas 
     if (4*(a**3) + 27*(b**2)) != 0:
@@ -76,7 +76,7 @@ def checkRoot(a, b): #checa se realmente a curva é uma curva nao-singular, se n
         
 def calcRoot(a, b, p):
     contador = 0
-    listOrdem = []
+    listorder = []
     listPonto = []
     
     for x in range(p):
@@ -84,15 +84,15 @@ def calcRoot(a, b, p):
             if (y**2)%p == (x**3 + a*x + b)%p:
                 contador += 1
                 ponto = (x,y)
-                ordem = getOrder(x, y, p, a)
-                listOrdem.append(ordem)
+                order = getOrder(x, y, p, a)
+                listorder.append(order)
                 listPonto.append(ponto)
-                print('Ponto ({}, {}) Ordem: {}'.format(x,y,ordem))
+                print('Ponto ({}, {}) order: {}'.format(x,y,order))
     
-    lista = [value for value in list(zip(listOrdem, listPonto))]            
+    lista = [value for value in list(zip(listorder, listPonto))]            
     lista.sort()
-    ordem, pontox, pontoy = str(lista[-1]).split(',')
-    print("\nPonto de maior ordem ({},{}) possui ordem igual a {}".format(pontox.split('(')[1], pontoy.split(')')[0], ordem.split('(')[1]))            
+    order, pontox, pontoy = str(lista[-1]).split(',')
+    print("\nPonto de maior order ({},{}) possui order igual a {}".format(pontox.split('(')[1], pontoy.split(')')[0], order.split('(')[1]))            
     print("Numero total de pontos:",contador) #todos os pontos mais o ponto no infinito
         
     

@@ -1,16 +1,22 @@
 import os
-from digital_signature import generate, get_global_params, check_message_file_is_not_empty
+from digital_signature import generate, get_global_params, check_message_file_is_not_empty, authenticate, check_has_files
 
 
 
 def questao_a(pointG, order, p, a):
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    r, s, message = generate(pointG, order, p, a, 'questao_a')
+    message = generate(pointG, order, p, a, 'questao_a')
 
-    print("\n\n\tR: ", r)
-    print("\tS: ", s)
-    print("\tMensagem: ", message)
+
+    # # Printa resultado
+    # with open('signature_pair.txt') as file:
+    #     r = file.readline().split(" ", 1)[1].rsplit(" ", 1)[0]
+    #     s = file.readline().split(" ", 1)[1].rsplit(" ", 1)[0]
+
+    # print("\n\n\tR: ", r)
+    # print("\tS: ", s)
+    # print("\tMensagem: ", message)
 
     input("\nPessione enter para continuar...")
 
@@ -23,8 +29,6 @@ def questao_b(pointG, order, p, a):
     check_message_file_is_not_empty()
 
     generate(pointG, order, p, a, 'questao_b')
-    
-    
 
     input("\nPessione enter para continuar...")
 
@@ -32,9 +36,15 @@ def questao_b(pointG, order, p, a):
 
 
 
-def questao_c():
-    print('Entrou em C')
+def questao_c(pointG, order, p, a):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    has_files = check_has_files()
 
+    if has_files:
+        authenticate(pointG, order, p, a)
+
+    input("\nPessione enter para continuar...")
 
 
 
@@ -51,13 +61,13 @@ def menu():
     p = 7
     a = 10
 
-    print("\tOrdem:", order)
+    print("\torder:", order)
     print("\tGx:", pointG[0])
     print("\tGy:", pointG[1])    
     print("\tp:", p)
     print("\ta:", a)
 
-    value = input("\nPessione enter para continuar...")
+    input("\nPessione enter para continuar...")
 
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -75,7 +85,7 @@ def menu():
         elif entrada == 'b':
             questao_b(pointG, order, p, a)
         elif entrada == 'c':
-            print('Entrou em C')
+            questao_c(pointG, order, p, a)
         else:
             print('\n\n\t\tAdeus!\n\n')
             break

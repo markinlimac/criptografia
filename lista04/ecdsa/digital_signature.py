@@ -7,14 +7,31 @@ sys.path.insert(0, '..')
 import elipticAlgorithym
 
 
-def modular_inverse(k, ordem):
 
-    for number in range(ordem):
-        result = (k * number) % ordem
-        if result == 1: 
-            break
+def hash_to_int(hash, order):
+    number = 0
 
+    for char in hash:
+        number += ord(char)
+
+    number = number % order
     return number
+    
+
+
+def modular_inverse(k, order):
+
+    for number in range(order):
+        result = (k * number) % order
+
+        # print('Numero ' , number, ': ', result)
+
+        if result == 1: 
+            return number
+    
+    number = 1
+    return number
+
 
 
 def extend_euclids_function(a, b):
@@ -46,69 +63,35 @@ def multiply_ponit(k, G, p, a):
     return resultado
 
 
-def calculate_k(ordem):
+def sum_points(pointP, pointQ, a, order):
+    Xp, Yp = pointP
+    Xq, Yq = pointQ
+
+    if pointP != pointQ:
+        dividendo = (Yq-Yp) % order
+        divisor = (Xq-Xp) % order
+        delta = (dividendo*extend_euclids_function(divisor, order)) % order
+    elif pointP == pointQ:
+        dividendo = (3*(Xp**2)+a) % order
+        divisor = (2*Yp) % order
+        delta = (dividendo*extend_euclids_function(divisor, order)) % order
+
+    Xr = ((delta**2) - Xp - Xq) % order
+    Yr = (delta*(Xp-Xr) - Yp) % order
+    resultado = (Xr, Yr)
+
+    return resultado
+
+
+
+def calculate_k(order):
     
     rand = 0
-    while not bltin_gcd(rand, int(ordem)) == 1:
-        rand = randint(1, ordem-1)
+    while not bltin_gcd(rand, int(order)) == 1:
+        rand = randint(1, order-1)
 
     return rand
 
-
-def generate(PointG, ordem, p, a, questao):
-    print('-------------------- GERANDO ASSINATURA DIGITAL -------------------- ')
-
-    # PointG = (Gx, Gy)
-
-    d = 149                                         # Chave Privada
-    PointQ = multiply_ponit(d, PointG, p, a)        # Chave Publica
-
-    repeat = True
-    while repeat == True:
-        repeat = False
-
-        # Passo 1: Calcula K
-        k = calculate_k(ordem)
-
-        # Passo 2: P = (x, y) = kG and r = x mod ordem
-        P = multiply_ponit(k, PointG, p, a)
-        r = P[0] % ordem
-
-        if r==0:
-            repeat = True
-            continue
-
-        # Passo 3: Calcule t = K^-1 mod ordem
-        t  = modular_inverse(k, ordem)
-
-        # Passo 4: Calcule Hash da mensagem
-        if questao == 'questao_a':
-            message = input("\nDigite a mensagem para a qual deseja criar a assinatura digital:  ")
-        elif questao == 'questao_b':
-            with open('message.txt') as file:
-                message = file.read()
-                # print("\n\nMensagem: ", message)
-        
-        e = sha1(message)
-
-        # Passo 5: Calcula S
-        s = t*(int(e, 16) + d*r)
-
-        # Passo 6: A assinatura é o par R e S
-        
-        if questao == 'questao_b':
-            with open('digital_signature.txt', 'w') as f:
-                print("r= ", r, file=f)
-                print("s= ", s, file=f)
-
-                print("\n\nA assinatura digital da mensagem")
-                print("\n\t\"" + message + "\"\n")
-                print("\n\t\tencontra-se no arquivo 'digital_signature.txt'.")
-                
-                return
-
-
-        return r, s, message
 
 
 def get_global_params():
@@ -166,5 +149,166 @@ def check_message_file_is_not_empty():
 
             else:
                 empty = False
+
+
+
+def check_has_files():
+    try:
+        with open('public_key.txt') as file:
+            file.readline()
+    except:
+        print("\n\n\tArquivo 'public_key.txt' não existe, ele deve ser gerado pela opção B\n\n")
+        return False
+
+
+    try:
+        with open('signature_pair.txt') as file:
+            file.readline()
+
+    except:
+        print("\n\n\tArquivo 'signature_pair.txt' não existe, ele deve ser gerado pela opção B\n\n")
+        return False
+
+    return True
+
+
+
+
+
+def generate(PointG, order, p, a, questao):
+    print('-------------------- GERANDO ASSINATURA DIGITAL -------------------- ')
+
+    # PointG = (Gx, Gy)
+
+    d = randint(1, order-1)                         # Chave Privada
+    PointQ = multiply_ponit(d, PointG, p, a)        # Chave Publica
+
+    with open('public_key.txt', 'w') as f:
+                print(PointQ, file=f)
+
+    repeat = True
+    while repeat == True:
+        repeat = False
+
+        # Passo 1: Calcula K
+        k = calculate_k(order)
+
+
+        # Passo 2: P = (x, y) = kG and r = x mod order
+        P = multiply_ponit(k, PointG, p, a)
+        r = P[0] % order
+
+        if r==0:
+            repeat = True
+            continue
+
+
+        # Passo 3: Calcule t = K^-1 mod order
+        t  = modular_inverse(k, order)
+
+
+        # Passo 4: Calcule e (hash da mensagem como inteiro)
+        if questao == 'questao_a':
+            message = input("\nDigite a mensagem para a qual deseja criar a assinatura digital:  ")
+        elif questao == 'questao_b':
+            with open('message.txt') as file:
+                message = file.read()
+                # print("\n\nMensagem: ", message)
+        
+        hash_160_bits = sha1(message)
+        e = hash_to_int(hash_160_bits, order)
+        # print('\n\n\nE: ', e, '\n\n')
+
+
+
+        # Passo 5: Calcula S
+        s = t*(e + d*r) % order
+
+        if s==0:
+            repeat = True
+            continue
+
+
+        # Passo 6: A assinatura é o par R e S
+        with open('signature_pair.txt', 'w') as f:
+            print("r=", r, file=f)
+            print("s=", s, file=f)
+
+            print("\n\nA assinatura digital da mensagem")
+            print("\n\t\"" + message + "\"")
+            print("\n\t\tencontra-se no arquivo 'signature_pair.txt'.\n\n\n")
+
+
+    return message
+
+
+
+
+def authenticate(pointG, order, p, a, message=False):
+    print('-------------------- AUTENTICANDO -------------------- ')
+
+    # Passo 1: Checar se R e S estão entre 1 e Order-1
+    print('\n\nPasso 1: Checando se R e S possuem os valores aceitos.')
+
+    with open('signature_pair.txt') as file:
+        r = int(file.readline().split(" ", 1)[1].rsplit(" ", 1)[0])
+        s = int(file.readline().split(" ", 1)[1].rsplit(" ", 1)[0])
     
+    if not (1 <= r <= order-1) or not (1 <= s <= order-1):
+        print('\n\n\tPar de assinatura inválido. \n\tAo menos um dos valores de R e S no arquivo "signature_pair.txt" está inválidos')
+        return
+        
+
+    # Passo 2: Calcule e
+    print('Passo 2: Calculando o valor de e.')
+
+    if not message:
+        with open('message.txt') as file:
+            message = file.read()
+    
+    hash_160_bits = sha1(message)
+    e = hash_to_int(hash_160_bits, order)
+
+
+    # Passo 3: Calcule w
+    print('Passo 3: Calculando o valor de w.')
+
+    w = modular_inverse(s, order)
+
+
+    # Passo 4: Caular u1 e u2
+    print('Passo 4: Calculando o valor de u1 e u2.')
+
+    u1 = e*w
+    u2 = r*w
+
+    # Passo 5: Calcule o ponto X
+    print('Passo 5: Calculando o valor do ponto X.')
+
+    with open('public_key.txt') as file:
+            content = file.read()
+            pointQ = (int(content[1]), int(content[4]))
+    
+    u1_times_G = multiply_ponit(u1, pointG, p, a)
+    u2_times_Q = multiply_ponit(u2, pointQ, p, a)
+    X = sum_points(u1_times_G, u2_times_Q, a, order)
+
+    # Passo 6: Calcular V caso X não seja identidade
+    print('Passo 6: Calculando o valor de v.')
+
+    if X==(0,0):
+        print("\n\n\t\tAssinatura Rejeitada!\n\n\n\n")
+        return
+
+    v = X[0] % order
+
+    # Passo 7: Cheque se v = r
+    print('Passo 7: Verificando se v é igual a r, caso seja, a mensagem é autentica.')
+
+    if(v == r):
+        print("\n\n\t\t Mensagem autenticada!\n\n\n\n")
+    else:
+        print("\n\n\t\t Autenticação Negada!\n\n\n\n")        
+    
+
     return
