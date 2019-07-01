@@ -8,15 +8,9 @@ def questao_a(pointG, order, p, a):
 
     message = generate(pointG, order, p, a, 'questao_a')
 
+    input("\nPessione para realizar a AUTENTICAÇÃO!\n\n\n")
 
-    # # Printa resultado
-    # with open('signature_pair.txt') as file:
-    #     r = file.readline().split(" ", 1)[1].rsplit(" ", 1)[0]
-    #     s = file.readline().split(" ", 1)[1].rsplit(" ", 1)[0]
-
-    # print("\n\n\tR: ", r)
-    # print("\tS: ", s)
-    # print("\tMensagem: ", message)
+    authenticate(pointG, order, p, a, message)    
 
     input("\nPessione enter para continuar...")
 
@@ -26,9 +20,10 @@ def questao_a(pointG, order, p, a):
 
 def questao_b(pointG, order, p, a):
     os.system('cls' if os.name == 'nt' else 'clear')
-    check_message_file_is_not_empty()
+    has_message = check_message_file_is_not_empty() 
 
-    generate(pointG, order, p, a, 'questao_b')
+    if has_message:
+        generate(pointG, order, p, a, 'questao_b')
 
     input("\nPessione enter para continuar...")
 
@@ -52,30 +47,17 @@ def menu():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("\n\nPara utilizar o ECDSA, primeiro devemos definir alguns parametros globais utilizando curvas elipticas.\n")
     
-    # pointG, order, p, a = get_global_params()
+    pointG, order, p, a = get_global_params()
 
-    print("\n\nOs valores foram setados:")
-
-    pointG = (3, 4)
-    order = 12
-    p = 7
-    a = 10
-
-    print("\torder:", order)
-    print("\tGx:", pointG[0])
-    print("\tGy:", pointG[1])    
-    print("\tp:", p)
-    print("\ta:", a)
-
-    input("\nPessione enter para continuar...")
+    input("\n\n\n\nPessione enter para continuar...")
 
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\n\nCom os parametros settados, há três operações disponíveis: \n")
         
-        print("a - Algoritmo ECDSA.")
-        print("b - Algoritmo ECDSA, com arquivo de mensagem e gerando arquivo com assinatura.")
-        print("c - Verificar se a assinatura gerada é valida.")
+        print("a - Algoritmo ECDSA (Completo).")
+        print("b - ECDSA utilizando arquivo de mensagem - Gerar.")
+        print("c - Verificar se a assinatura gerada é valida - Autenticar.")
         print("\nCaso deseje sair, insira outro caracter.")
 
         entrada = input("\n\t\tDigite a opção escolhida:\t")

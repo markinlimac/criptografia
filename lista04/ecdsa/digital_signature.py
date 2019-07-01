@@ -129,26 +129,21 @@ def get_global_params():
 
     order = order[1:]
 
-    return pointG, order, p, a
+    return pointG, int(order), p, a
 
 
 
 def check_message_file_is_not_empty():
-    input("\nPrimeiramente, insira a mensagem para a qual deseja gerar a assinatura digital no arquivo 'message.py'.\n\n"
-            "\t\tPara continuar pressione enter.\n\n")
-
-    empty = True
-
-    while empty:
-
-        with open('message.txt') as file:
+    
+    with open('message.txt') as file:
             first = file.read(1)
             if not first:
-                input("\nO arquivo continua vazio!"
-                        "\n\tInsira a mensagem e pressione enter.\n\n")
+                print("\nO arquivo 'message.txt' está vazio!"
+                        "\n\tInsira a mensagem e depois tente novamente.\n\n")
 
-            else:
-                empty = False
+                return False
+    
+    return True
 
 
 
@@ -178,8 +173,6 @@ def check_has_files():
 def generate(PointG, order, p, a, questao):
     print('-------------------- GERANDO ASSINATURA DIGITAL -------------------- ')
 
-    # PointG = (Gx, Gy)
-
     d = randint(1, order-1)                         # Chave Privada
     PointQ = multiply_ponit(d, PointG, p, a)        # Chave Publica
 
@@ -191,10 +184,14 @@ def generate(PointG, order, p, a, questao):
         repeat = False
 
         # Passo 1: Calcula K
+        print('\n\nPasso 1: Calculando K.')
+        
         k = calculate_k(order)
 
 
         # Passo 2: P = (x, y) = kG and r = x mod order
+        print('Passo 2: Calculando r a partir de P.')
+
         P = multiply_ponit(k, PointG, p, a)
         r = P[0] % order
 
@@ -204,12 +201,18 @@ def generate(PointG, order, p, a, questao):
 
 
         # Passo 3: Calcule t = K^-1 mod order
+        print('Passo 3: Calculando t.')
+
         t  = modular_inverse(k, order)
 
 
         # Passo 4: Calcule e (hash da mensagem como inteiro)
+        print('Passo 4: Calculando e (hash da mensagem).')
+
         if questao == 'questao_a':
-            message = input("\nDigite a mensagem para a qual deseja criar a assinatura digital:  ")
+            message = input("\nDigite a mensagem:  ")
+            print('')
+
         elif questao == 'questao_b':
             with open('message.txt') as file:
                 message = file.read()
@@ -222,6 +225,8 @@ def generate(PointG, order, p, a, questao):
 
 
         # Passo 5: Calcula S
+        print('Passo 5: Calculando S.')
+
         s = t*(e + d*r) % order
 
         if s==0:
@@ -230,6 +235,8 @@ def generate(PointG, order, p, a, questao):
 
 
         # Passo 6: A assinatura é o par R e S
+        print('Passo 6: Salvando R e S como a assinatura digital.')
+
         with open('signature_pair.txt', 'w') as f:
             print("r=", r, file=f)
             print("s=", s, file=f)
